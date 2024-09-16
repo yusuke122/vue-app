@@ -3,13 +3,17 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "dev": "vue-cli-service dev",
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "bootstrap": "^5.3.3",
     "core-js": "^3.8.3",
-    "vue": "^3.2.13"
+    "ol": "^10.1.0",
+    "vue": "^3.2.13",
+    "vuebootstrap": "^0.1.0"
   },
   "devDependencies": {
     "@babel/core": "^7.12.16",

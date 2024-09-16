@@ -1,15 +1,20 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <!--img alt="Vue logo" src="./assets/logo.png"-->
+  <!--HelloWorld msg="Welcome to Your Vue.js App"/-->
+  <MainMap/>
+  <!--CustomThunder/-->
 </template>
-
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+//import HelloWorld from './components/HelloWorld.vue'
+import MainMap from './components/MainMap.vue';
+//import CustomThunder from "./components/CustomThunder.vue";
 
 export default {
   name: 'App',
   components: {
-    HelloWorld
+    //HelloWorld,
+    MainMap,
+    //CustomThunder
   }
 }
 </script>
