@@ -1,13 +1,13 @@
 
 <script>
-import GrandC1 from "../components/GrandC1.vue"
-import GrandC2 from "../components/GrandC2.vue"
+import PopupCompPage from "../components/PopupCompPage.vue"
+import TabCompPage from "../components/TabCompPage.vue"
 import GrandC3 from "../components/GrandC3.vue"
 export default({
   props: ['titleStr'],
   components: {
-    GrandC1,
-    GrandC2,
+    PopupCompPage,
+    TabCompPage,
     GrandC3,
   },
 })
@@ -18,11 +18,11 @@ export default({
         <div class="tab_area">
             子：{{ titleStr }}
         </div>
-        <div v-if="titleStr=='dropdown'">
-            <GrandC1/>
+        <div v-if="titleStr=='Popup'">
+            <PopupCompPage/>
         </div>
-        <div v-if="titleStr=='Navbar'">
-            <GrandC2/>
+        <div v-if="titleStr=='Tab'">
+            <TabCompPage/>
         </div>
         <div v-if="titleStr=='Home'">
             <GrandC3/>

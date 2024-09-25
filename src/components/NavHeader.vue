@@ -9,13 +9,13 @@ const title=ref("nav")
 <template>
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
   <span style="margin-right: 5vw;">{{ title }}</span>
-  <span class="navbar-brand" href="#" v-on:click='$emit("childData","Navbar");navMenuClick("Navbar")'>Navbar</span>
+  <span class="navbar-brand" href="#" v-on:click='$emit("childData","Popup");navMenuClick("Popup")'>Popup</span>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
     <ul class="navbar-nav mr-auto">
-      <li class="nav-item active" v-on:click='$emit("childData","Home");navMenuClick("Home")'>Home <span class="sr-only">(current)</span>
+      <li class="nav-item active" v-on:click='$emit("childData","Tab");navMenuClick("Tab")'>Tab
       </li>
       <li class="nav-item">
         <span class="nav-link" href="#" v-on:click='$emit("childData","Link");navMenuClick("Link")'>Link</span>
