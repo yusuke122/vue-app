@@ -6,12 +6,12 @@
       class="nav-link active"
       id="nav-home-tab"
       data-bs-toggle="tab"
-      data-bs-target="#nav-home"
+      data-bs-target={{#}}+{{tablist[0]}}
       type="button"
       role="tab"
-      aria-controls="nav-home"
+      aria-controls={{tablist[0]}}
       aria-selected="true"
-      v-on:click="tabCilck('nav-home')"
+      v-on:click="tabCilck(tablist[0])"
     >
       Home
     </button>
@@ -19,12 +19,12 @@
       class="nav-link"
       id="nav-profile-tab"
       data-bs-toggle="tab"
-      data-bs-target="#nav-profile"
+      data-bs-target={{#}}+{{tablist[1]}}
       type="button"
       role="tab"
-      aria-controls="nav-profile"
+      aria-controls={{tablist[1]}}
       aria-selected="false"
-      v-on:click="tabCilck('nav-profile')"
+      v-on:click="tabCilck(tablist[1])"
     >
       Profile
     </button>
@@ -32,12 +32,12 @@
       class="nav-link"
       id="nav-contact-tab"
       data-bs-toggle="tab"
-      data-bs-target="#nav-contact"
+      data-bs-target={{#}}+{{tablist[2]}}
       type="button"
       role="tab"
-      aria-controls="nav-contact"
+      aria-controls={{tablist[2]}}
       aria-selected="false"
-      v-on:click="tabCilck('nav-contact')"
+      v-on:click="tabCilck(tablist[2])"
     >
       Contact
     </button>
@@ -50,7 +50,24 @@
     role="tabpanel"
     aria-labelledby="nav-home-tab"
   >
-    nav-home
+    <table class="table">
+      <thead>
+        <tr>
+          <th>1</th>
+          <th>2</th>
+          </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td></td>
+          <td></td>
+        </tr>
+        </tbody>
+      </table>
   </div>
   <div
     class="tab-pane fade show"
@@ -71,11 +88,13 @@
 </div>
 </template>
 <script setup>
+const tablist=["nav-home","nav-profile","nav-contact"]
+const tabnamelist=["nav-home-tab","nav-profile-tab","nav-contact-tab"]
 function tabCilck(tabname){
     //タブ全非表示
-    const tablist=["nav-home","nav-profile","nav-contact"]
     for(let i=0;i<tablist.length;i++){
-        let tab=document.getElementById(tablist[i]+"-tab")
+        //let tab=document.getElementById(tablist[i]+"-tab")
+        let tab=document.getElementById(tabnamelist[i])
         let tabContent=document.getElementById(tablist[i])
         tab.classList.remove("active")
         tabContent.classList.remove("active")
@@ -87,3 +106,25 @@ function tabCilck(tabname){
     tabContent.classList.add("active")
 }
 </script>
+<style scoped>
+.tab-content{
+  background-color: beige;
+  border:0.1rem solid #aaaaaa;
+  height:20vh;
+  border-radius: 0rem 0rem 1rem 1rem;
+}
+.nav-link{
+  background-color: beige;
+}
+table{
+  margin-left:25%;
+  margin-right:25%;
+  width:50%
+}
+th{
+  border:0.1rem solid #111111;
+}
+td{
+  border:0.1rem solid #111111;
+}
+</style>
