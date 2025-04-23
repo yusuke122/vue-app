@@ -12,6 +12,7 @@ import { ScaleLine, defaults as defaultControls } from 'ol/control.js'
 import CalendarArea from '@/components/CalendarArea.vue'
 import TableArea from '@/components/TableArea.vue'
 import LineArea from '@/components/LineArea.vue'
+import TemplateParent from '@/components/TemplateParent.vue'
 
 let btn_title = ['', '', '', '', '', '', '', '', '', '', '過去データ表示']
 //popup_mode
@@ -356,6 +357,7 @@ onMounted(() => {
     </div>
   </div>
   <!------------------------>
+    <TemplateParent />
 </template>
 <style scoped>
 .map {
