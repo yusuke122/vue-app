@@ -1,0 +1,45 @@
+{
+  "name": "vue-map-app",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "concurrently \"npm run mock-api\" \"vite\"",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test:unit": "vitest",
+    "lint": "eslint . --fix",
+    "format": "prettier --write src/",
+    "mock-api": "mockoon-cli start --data ./mock/mockoon-env.json --port 3000 --daemon-off"
+  },
+  "dependencies": {
+    "@popperjs/core": "^2.11.8",
+    "@vuepic/vue-datepicker": "^9.0.3",
+    "axios": "^1.8.4",
+    "bootstrap": "^5.3.5",
+    "chart.js": "^4.4.5",
+    "jquery": "^3.7.1",
+    "ol": "^10.2.1",
+    "ol-ext": "^4.0.23",
+    "v-calendar": "^3.1.2",
+    "vue": "^3.5.11",
+    "vue-chartjs": "^5.3.1",
+    "vue-router": "^4.4.5",
+    "vue3-datepicker": "^0.4.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.12.0",
+    "@mockoon/cli": "^9.2.0",
+    "@vitejs/plugin-vue": "^5.1.4",
+    "@vitest/eslint-plugin": "1.1.7",
+    "@vue/eslint-config-prettier": "^10.0.0",
+    "@vue/test-utils": "^2.4.6",
+    "concurrently": "^9.1.2",
+    "eslint": "^9.12.0",
+    "eslint-plugin-vue": "^9.28.0",
+    "jsdom": "^25.0.1",
+    "prettier": "^3.3.3",
+    "vite": "^5.4.8",
+    "vitest": "^2.1.2"
+  }
+}
