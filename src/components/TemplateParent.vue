@@ -13,6 +13,6 @@ import TimeDisplay from './TimeDisplay.vue'
 const currentTime = ref('')
 // 親から子コンポーネントを受け取って、時間が変わるたびに反映
 watch(() => currentTime.value, (newTime) => {
-  console.log('親で反映された:', newTime)
+  //console.log('親で反映された:', newTime)
 })
 </script>

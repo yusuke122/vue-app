@@ -1,0 +1,14 @@
+{
+    "method": "get",
+    "endpoint": "/table",
+    "responses": [
+      {
+        "statusCode": 200,
+        "bodyFile": "tableData.json",
+        "headers": [
+          { "key": "Content-Type", "value": "application/json" }
+        ]
+      }
+    ]
+  }
+  
