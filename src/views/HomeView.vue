@@ -186,7 +186,7 @@ onMounted(() => {
 </script>
 <template>
   <div id="map" class="map"></div>
-　<MapPopups :mapObj="map">
+　<MapPopups :mapObj="map"/>
   <!--div id="popup" class="ol-popup">
     <a href="#" id="popup-closer" class="ol-popup-closer"></a>
     <div id="popup-content"></div>
