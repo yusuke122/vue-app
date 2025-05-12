@@ -12,7 +12,7 @@ let content
 let closer
 
  const overlay = new Overlay({
-    element: ,
+    element: getContainerElement(),
     autoPan: {
       animation: {
         duration: 250,
