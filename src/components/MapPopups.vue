@@ -5,6 +5,14 @@ let container
 let content
 let closer
 
+ const overlay = new Overlay({
+    element: container,
+    autoPan: {
+      animation: {
+        duration: 250,
+      },
+    },
+  })
 
 //let newCtl=defaultControls().extend(new ScaleLine())
 /**
