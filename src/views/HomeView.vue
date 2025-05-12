@@ -13,6 +13,7 @@ import CalendarArea from '@/components/CalendarArea.vue'
 import TableArea from '@/components/TableArea.vue'
 import LineArea from '@/components/LineArea.vue'
 import TemplateParent from '@/components/TemplateParent.vue'
+import MapPopups from '@/components/MapPopups.vue'
 
 const map=reactive(null)
 let btn_title = ['', '', '', '', '', '', '', '', '', '', '天気を表示']
