@@ -6,20 +6,17 @@
 </template>
 <script setup>
 import Overlay from 'ol/Overlay.js'
+import｛ref,watch,reactive,defineProps｝from "vue"
 
 let container
 let content
 let closer
 
- const overlay = new Overlay({
-    element: getContainerElement(),
-    autoPan: {
-      animation: {
-        duration: 250,
-      },
-    },
-  })
+defineProps({
+ map:Object
+})
 
+alert(map)
 //let newCtl=defaultControls().extend(new ScaleLine())
 /**
    * Add a click handler to the map to render the popup.
@@ -98,4 +95,12 @@ function getCloserElement() {
   closer = document.getElementById('popup-closer')
   return closer
 }
+ const overlay = new Overlay({
+    element: getContainerElement(),
+    autoPan: {
+      animation: {
+        duration: 250,
+      },
+    },
+  })
 </script>
