@@ -1,3 +1,9 @@
+<template>
+  <div id="popup" class="ol-popup">
+    <a href="#" id="popup-closer" class="ol-popup-closer"></a>
+    <div id="popup-content"></div>
+  </div>
+</template>
 <script setup>
 import Overlay from 'ol/Overlay.js'
 
@@ -6,7 +12,7 @@ let content
 let closer
 
  const overlay = new Overlay({
-    element: container,
+    element: ,
     autoPan: {
       animation: {
         duration: 250,
