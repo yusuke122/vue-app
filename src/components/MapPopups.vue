@@ -15,7 +15,7 @@ let closer
 defineProps({
  map:Object
 })
-
+let map=props.map
 alert(map)
 //let newCtl=defaultControls().extend(new ScaleLine())
 /**
