@@ -14,7 +14,7 @@ import TableArea from '@/components/TableArea.vue'
 import LineArea from '@/components/LineArea.vue'
 import TemplateParent from '@/components/TemplateParent.vue'
 
-let btn_title = ['', '', '', '', '', '', '', '', '', '', '過去データ表示']
+let btn_title = ['', '', '', '', '', '', '', '', '', '', '天気を表示']
 //popup_mode
 //0:musen 1:group 2:BOUEI_area 3:MINKAN_area
 const popup_mode = ref(2)
