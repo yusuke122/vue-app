@@ -29,27 +29,27 @@ watch(musen_pos_y, async () => {
 //data
 //popup_musen
 let popup_musen_arr = [
-  /*{ id: 0, title: '無線位置', data: '' },
-  { id: 1, title: '無線位置', data: '' },
-    { id: 2, title: '無線位置', data: '' },
-    { id: 3, title: '無線位置', data: '' },*/
+  /*{ id: 0, title: '位置', data: '' },
+  { id: 1, title: '位置', data: '' },
+    { id: 2, title: '位置', data: '' },
+    { id: 3, title: '位置', data: '' },*/
 ]
 
 //popup_musen_table
 let popup_musen_table_arr = [
-  { id: 0, title: '防衛通信（VHF）', data: '良' },
-  { id: 1, title: '防衛通信（UHF）', data: '良' },
-  { id: 2, title: '民間通信（LTE）', data: '通信可' },
-  { id: 3, title: '民間通信（衛星）', data: '通信不可' },
+  { id: 0, title: '関東', data: '良' },
+  { id: 1, title: '東北', data: '良' },
+  { id: 2, title: '北九州', data: '可' },
+  { id: 3, title: '近畿', data: '不可' },
 ]
 
 let popup_group_table_arr = [
-  { id: 0, title: '通信グループ', data: '1' },
-  { id: 1, title: '無線位置', data: '1' },
-  { id: 2, title: '無線位置', data: '1' },
-  { id: 3, title: '無線位置', data: '1' },
-  { id: 4, title: '無線位置', data: '1' },
-  { id: 5, title: '無線位置', data: '1' },
+  { id: 0, title: '天気', data: '1' },
+  { id: 1, title: '晴れ', data: '1' },
+  { id: 2, title: '晴れ', data: '1' },
+  { id: 3, title: '雨', data: '1' },
+  { id: 4, title: 'くもり', data: '1' },
+  { id: 5, title: 'くもり', data: '1' },
 ]
 
 //offcanvas
@@ -139,25 +139,25 @@ onMounted(() => {
         '<div style="line-height:1rem;margin-bottom:1vh;"><div style="color:#ffffff">グループ番号：[' +
         '1' +
         ']</div>' +
-        '<div style="color:#ffffff">グループ番号：[' +
+        '<div style="color:#ffffff">会社ID：[' +
         '1' +
         ']</div>' +
-        '<div style="color:#ffffff">グループ番号：[' +
+        '<div style="color:#ffffff">会社ID：[' +
         '1' +
         ']</div>' +
-        '<div style="color:#ffffff">グループ番号：[' +
+        '<div style="color:#ffffff">会社ID：[' +
         '1' +
         ']</div>' +
-        '<div style="color:#ffffff">グループ番号：[' +
+        '<div style="color:#ffffff">会社ID：[' +
         '1' +
         ']</div>' +
-        '<div style="color:#ffffff">グループ番号：[' +
+        '<div style="color:#ffffff">会社ID：[' +
         '1' +
         ']</div></div>'
       content.appendChild(popup_group)
     } else if (popup_mode.value == 2) {
       content.innerHTML =
-        '<div style="color:#ffffff">無線位置：[' +
+        '<div style="color:#ffffff">座標：[' +
         musen_pos_x.value +
         ',' +
         musen_pos_y.value +
@@ -207,7 +207,7 @@ onMounted(() => {
       <div
         style="width: 20vw; color: #ffffff; border-top: 0.1rem dashed #aaaaaa"
       >
-        [通信品質]
+        [天気]
       </div>
       <table class="table striped bordered musen_conn_status_area">
         <tbody>
@@ -225,7 +225,7 @@ onMounted(() => {
       <div
         style="width: 20vw; color: #ffffff; border-top: 0.1rem dashed #aaaaaa"
       >
-        [通信品質]
+        [天気]
       </div>
       <table class="table striped bordered musen_conn_status_area">
         <tbody>
@@ -244,7 +244,7 @@ onMounted(() => {
       <div
         style="width: 20vw; color: #ffffff; border-top: 0.1rem dashed #aaaaaa"
       >
-        [通信品質]
+        [天気]
       </div>
       <table class="table striped bordered musen_conn_status_area">
         <tbody>
@@ -275,7 +275,7 @@ onMounted(() => {
       <div
         style="width: 20vw; color: #ffffff; border-top: 0.1rem dashed #aaaaaa"
       >
-        [通信品質]
+        [天気]
       </div>
       <table class="table striped bordered musen_conn_status_area">
         <tbody>
@@ -316,7 +316,7 @@ onMounted(() => {
   >
     <div class="offcanvas-header">
       <h5 class="offcanvas-title" id="offcanvasBottomLabel" style="height: 2vh">
-        過去データ
+        天気
       </h5>
       <button
         type="button"
