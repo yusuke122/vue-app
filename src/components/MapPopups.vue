@@ -6,7 +6,7 @@
 </template>
 <script setup>
 import Overlay from 'ol/Overlay.js'
-import｛ref,watch,reactive,defineProps｝from "vue"
+import { ref, onMounted, watch, reactive } from 'vue'
 
 let container
 let content
