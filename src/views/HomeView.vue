@@ -17,7 +17,6 @@ import TemplateParent from '@/components/TemplateParent.vue'
 const map=reactive(null)
 let btn_title = ['', '', '', '', '', '', '', '', '', '', '天気を表示']
 //popup_mode
-//0:musen 1:group 2:BOUEI_area 3:MINKAN_area
 const popup_mode = ref(2)
 const musen_pos_x = ref('')
 const musen_pos_y = ref('')
