@@ -6,7 +6,7 @@ import TileLayer from 'ol/layer/Tile.js'
 import View from 'ol/View.js'
 import { toLonLat, fromLonLat } from 'ol/proj'
 import { toStringHDMS } from 'ol/coordinate.js'
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted, watch, reactive } from 'vue'
 import { firstMap, secondMap, thirdMap } from '../modules/drawLayers'
 import { ScaleLine, defaults as defaultControls } from 'ol/control.js'
 import CalendarArea from '@/components/CalendarArea.vue'
@@ -14,6 +14,7 @@ import TableArea from '@/components/TableArea.vue'
 import LineArea from '@/components/LineArea.vue'
 import TemplateParent from '@/components/TemplateParent.vue'
 
+const map=reactive(null)
 let btn_title = ['', '', '', '', '', '', '', '', '', '', '天気を表示']
 //popup_mode
 //0:musen 1:group 2:BOUEI_area 3:MINKAN_area
@@ -106,7 +107,7 @@ onMounted(() => {
    * Create the map.
    */
   let layers = [firstMap]
-  const map = new Map({
+  map.value = new Map({
     controls: defaultControls().extend(new ScaleLine()),
     layers: layers,
     overlays: [overlay],
@@ -120,7 +121,7 @@ onMounted(() => {
   /**
    * Add a click handler to the map to render the popup.
    */
-  map.on('singleclick', function (evt) {
+  /*map.on('singleclick', function (evt) {
     const coordinate = evt.coordinate
     var coor = toLonLat(coordinate)
     musen_pos_x.value = Number(Math.floor(coor[0] * 1000000) / 1000000)
@@ -180,7 +181,7 @@ onMounted(() => {
     content.style.scrollbarColor = '#555555 #222222'
     //content.style.scrollbarWidth = 'thin'
     overlay.setPosition(coordinate)
-  })
+  })*/
 })
 </script>
 <template>
