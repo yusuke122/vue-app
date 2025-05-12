@@ -70,24 +70,24 @@ onMounted(() => {
   /**
    * Create an overlay to anchor the popup to the map.
    */
-  const overlay = new Overlay({
+  /*const overlay = new Overlay({
     element: container,
     autoPan: {
       animation: {
         duration: 250,
       },
     },
-  })
+  })*/
 
   /**
    * Add a click handler to hide the popup.
    * @return {boolean} Don't follow the href.
    */
-  closer.onclick = function () {
+  /*closer.onclick = function () {
     overlay.setPosition(undefined)
     closer.blur()
     return false
-  }
+  }*/
 
   /**control */
   let controls = []
@@ -109,7 +109,7 @@ onMounted(() => {
   map.value = new Map({
     controls: defaultControls().extend(new ScaleLine()),
     layers: layers,
-    overlays: [overlay],
+    //overlays: [overlay],
     target: 'map',
     view: new View({
       center: fromLonLat([139.7114, 35.6814]),
