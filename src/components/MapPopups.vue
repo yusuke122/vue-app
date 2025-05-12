@@ -6,7 +6,7 @@ let content
 let closer
 
 
-
+//let newCtl=defaultControls().extend(new ScaleLine())
 /**
    * Add a click handler to the map to render the popup.
    */
