@@ -184,11 +184,11 @@ onMounted(() => {
 })
 </script>
 <template>
-  <div id="map" class="map"></div>
+  <!--div id="map" class="map"></div>
   <div id="popup" class="ol-popup">
     <a href="#" id="popup-closer" class="ol-popup-closer"></a>
     <div id="popup-content"></div>
-  </div>
+  </div-->
   <!------------------------>
   <div style="display: none">
     <div id="popup_musen">
