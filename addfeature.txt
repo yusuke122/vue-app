@@ -243,3 +243,189 @@ features.forEach(data => {
 
 必要であれば「関数マッピング＋OpenLayers距離補正」を含んだコードテンプレートを作成します。**描画対象（point/polygonなど）やデータ例**をいただければ、具体的にご提供可能です。どうされますか？
 
+非常に良い方向性です！**描画処理を GeoJSON で統一し、種類ごとにレイヤーを分ける構成**は、スケーラブルで保守性も高く、OpenLayersの設計にも合っています。
+
+以下に、**設計案とスマートな実装方法**をご提案します。
+
+---
+
+## 【目的】
+
+* GeoJSON フォーマットでサーバーからデータ取得
+* 各タイプ（Point / Circle / Polygon）は **別レイヤーで描画**
+* 共通処理により、**再描画を統一管理**
+* `Circle` は疑似的に `Polygon`（バッファ）として描画
+* `Polygon` は日本メッシュ（Japan Mesh）で管理
+
+---
+
+## 【レイヤー構成】
+
+```plaintext
+Layer: pointLayer     ← Pointフィーチャー用
+Layer: circleLayer    ← Circle相当のPolygon描画用
+Layer: polygonLayer   ← メッシュ（Polygon）用
+```
+
+---
+
+## 【スマートな再描画の方針】
+
+### ● 1. APIから取得するGeoJSONの仕様
+
+```json
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "geometry": {
+        "type": "Point",
+        "coordinates": [139.6917, 35.6895]
+      },
+      "properties": {
+        "type": "point",
+        "id": 123,
+        ...
+      }
+    },
+    {
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[...]]],
+      },
+      "properties": {
+        "type": "polygon",
+        "meshCode": "53394523",
+        ...
+      }
+    },
+    ...
+  ]
+}
+```
+
+---
+
+## 【再描画処理の統一コード例】
+
+```ts
+import { Vector as VectorLayer } from 'ol/layer';
+import { Vector as VectorSource } from 'ol/source';
+import GeoJSON from 'ol/format/GeoJSON';
+import { getDistance } from 'ol/sphere';
+import { fromCircle } from 'ol/geom/Polygon';
+import Circle from 'ol/geom/Circle';
+import Feature from 'ol/Feature';
+import Point from 'ol/geom/Point';
+
+// --- レイヤーを準備 ---
+const pointSource = new VectorSource();
+const circleSource = new VectorSource();
+const polygonSource = new VectorSource();
+
+const pointLayer = new VectorLayer({ source: pointSource });
+const circleLayer = new VectorLayer({ source: circleSource });
+const polygonLayer = new VectorLayer({ source: polygonSource });
+
+// --- GeoJSONデータを分類してレイヤーへ描画 ---
+function updateLayersFromGeoJSON(json) {
+  pointSource.clear();
+  circleSource.clear();
+  polygonSource.clear();
+
+  const format = new GeoJSON();
+  const rawFeatures = format.readFeatures(json, {
+    featureProjection: 'EPSG:3857',
+  });
+
+  rawFeatures.forEach(f => {
+    const geomType = f.getGeometry().getType();
+    const props = f.getProperties();
+    delete props.geometry;
+
+    if (geomType === 'Point' && props.type === 'circle') {
+      // Circle: 半径をもとに疑似Polygonに変換
+      const coord = f.getGeometry().getCoordinates();
+      const radius = props.radius || 100; // meters
+      const circle = new Circle(coord, radius);
+      const polygon = fromCircle(circle, 64);
+      const feature = new Feature(polygon);
+      feature.setProperties(props);
+      circleSource.addFeature(feature);
+
+    } else if (geomType === 'Point') {
+      // Pointはそのまま
+      pointSource.addFeature(f);
+
+    } else if (geomType === 'Polygon') {
+      // Polygon（Japan Mesh含む）
+      polygonSource.addFeature(f);
+    }
+  });
+}
+```
+
+---
+
+## 【描画スタイルの関数マッピング】
+
+```ts
+import Style from 'ol/style/Style';
+import CircleStyle from 'ol/style/Circle';
+import Stroke from 'ol/style/Stroke';
+import Fill from 'ol/style/Fill';
+
+function createPointStyle(feature) {
+  return new Style({
+    image: new CircleStyle({
+      radius: 6,
+      fill: new Fill({ color: 'blue' }),
+      stroke: new Stroke({ color: 'white', width: 1 }),
+    }),
+  });
+}
+
+function createPolygonStyle(feature) {
+  return new Style({
+    fill: new Fill({ color: 'rgba(0, 255, 0, 0.2)' }),
+    stroke: new Stroke({ color: 'green', width: 1 }),
+  });
+}
+
+const styleMap = {
+  point: createPointStyle,
+  polygon: createPolygonStyle,
+  circle: createPolygonStyle,
+};
+
+// 各レイヤーに style function を設定
+pointLayer.setStyle(f => styleMap['point'](f));
+circleLayer.setStyle(f => styleMap['circle'](f));
+polygonLayer.setStyle(f => styleMap['polygon'](f));
+```
+
+---
+
+## 【日本メッシュ対応のヒント】
+
+* メッシュコード → Polygon 座標生成は事前に行って GeoJSON として送ると楽です
+* 必要であれば OpenLayers 側で `meshcode-to-polygon` 処理も対応可能（JSで可能）
+
+---
+
+## 【まとめ】
+
+| 要素     | 方法                                         |
+| ------ | ------------------------------------------ |
+| 描画形式   | **GeoJSONに統一**（Point, Circleは擬似Polygon）    |
+| レイヤー分離 | Point / Circle / Polygon で別々の VectorLayer  |
+| 再描画    | 各レイヤーの `source.clear()` 後に `addFeatures()` |
+| スタイル   | typeに応じた **関数マッピング**で切り替え                  |
+| 座標補正   | `ol/sphere.getDistance()` で近傍統合可           |
+
+---
+
+ご希望あればこの構成で**Vue + OpenLayers + API連携のテンプレート**も構築可能です。また、日本メッシュの処理をOpenLayers上で行う補助ライブラリが必要であればご紹介します。
+
+必要ですか？またはこのコードをベースに具体的な構成へ発展させたいですか？
+
