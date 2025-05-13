@@ -118,4 +118,128 @@ function mergeNearbyPoints(dataArray, thresholdMeters = 10) {
 * デモ用の最小構成（`OpenLayers + Turf.js + GeoJSON描画 + スタイル分岐 + 補正`）を作成可能です。
 * ご要望のデータフォーマット（APIレスポンス形式）をいただければ、それに合わせてコードを書きます。
 
-必要であれば「描画用コードテンプレート」を用意しましょうか？
+必要であれば「描画用コードテンプレート」を用意しましょう
+
+か？
+
+
+
+
+全く問題ありません。どちらの質問も非常に本質的です。以下、それぞれ丁寧に解説します。
+
+---
+
+## 【1】OpenLayersで距離を測る方法（turf.jsを使わず）
+
+はい、**OpenLayers単体でも距離計算は可能です**。`ol/sphere` の `getDistance()` を使うことで、\*\*2点間の大円距離（メートル単位）\*\*を取得できます。
+
+### ● 使用方法：
+
+```js
+import { getDistance } from 'ol/sphere';
+
+const coord1 = [lng1, lat1]; // EPSG:4326
+const coord2 = [lng2, lat2];
+
+const distanceMeters = getDistance(coord1, coord2); // 単位：メートル
+```
+
+### ● 距離補正処理の例（OpenLayers版）
+
+```js
+import { getDistance } from 'ol/sphere';
+
+function mergeNearbyCoordinates(dataArray, threshold = 10) {
+  const merged = [];
+
+  dataArray.forEach(data => {
+    const existing = merged.find(d =>
+      getDistance(d.coord, data.coord) < threshold
+    );
+
+    if (existing) {
+      existing.group.push(data);
+    } else {
+      merged.push({ coord: data.coord, group: [data] });
+    }
+  });
+
+  return merged;
+}
+```
+
+> **注意：**
+> `getDistance()` を使うためには座標が **緯度経度 (EPSG:4326)** である必要があります。Web Mercator (EPSG:3857) なら `toLonLat()` で変換してください。
+
+---
+
+## 【2】関数マッピングとは何か？
+
+### ● 定義：
+
+\*\*「文字列やタイプをキーとして、それに対応する処理関数をマップ（関連付け）する」\*\*プログラミング手法です。
+
+```js
+const styleMap = {
+  point: createPointStyle,
+  circle: createCircleStyle,
+  polygon: createPolygonStyle,
+};
+```
+
+### ● 利点：
+
+* `if` や `switch` を使わず、スッキリ記述できる
+* 処理が分離されていて保守しやすい
+* タイプに応じた動作の追加・変更が簡単
+
+### ● 実装例（OpenLayers向け）：
+
+```js
+function createPointStyle(feature) {
+  return new Style({
+    image: new CircleStyle({
+      radius: 6,
+      fill: new Fill({ color: 'blue' }),
+      stroke: new Stroke({ color: 'white', width: 2 }),
+    }),
+  });
+}
+
+function createPolygonStyle(feature) {
+  return new Style({
+    stroke: new Stroke({ color: 'green', width: 2 }),
+    fill: new Fill({ color: 'rgba(0, 255, 0, 0.2)' }),
+  });
+}
+
+const styleMap = {
+  point: createPointStyle,
+  polygon: createPolygonStyle,
+};
+
+features.forEach(data => {
+  const feature = new Feature({
+    geometry: createGeometry(data), // data.type に応じて Geometry を生成
+  });
+  
+  const styleFn = styleMap[data.type] || defaultStyle;
+  feature.setStyle(styleFn(feature));
+
+  vectorSource.addFeature(feature);
+});
+```
+
+---
+
+## まとめ
+
+| 項目               | 結論                                         |
+| ---------------- | ------------------------------------------ |
+| OpenLayersで距離を測る | `ol/sphere.getDistance()` で可能。`turf.js` 不要 |
+| 関数マッピングとは？       | 「タイプ → 処理関数」のオブジェクトで処理を切り替える設計手法           |
+
+---
+
+必要であれば「関数マッピング＋OpenLayers距離補正」を含んだコードテンプレートを作成します。**描画対象（point/polygonなど）やデータ例**をいただければ、具体的にご提供可能です。どうされますか？
+
