@@ -427,5 +427,142 @@ polygonLayer.setStyle(f => styleMap['polygon'](f));
 
 ご希望あればこの構成で**Vue + OpenLayers + API連携のテンプレート**も構築可能です。また、日本メッシュの処理をOpenLayers上で行う補助ライブラリが必要であればご紹介します。
 
-必要ですか？またはこのコードをベースに具体的な構成へ発展させたいですか？
+必要ですか？またはこのコードをベースに具体的な
+
+了解しました！
+
+つまり：
+
+* **Pointデータ** → `/api/points`
+* **Circleデータ** → `/api/circles`
+* **Polygonデータ**（例：メッシュ）→ `/api/polygons`
+
+のように、**APIのエンドポイントでデータの種類を識別する**ということですね。
+
+この場合は、**取得元のAPIによって適切な処理とレイヤーへ振り分ける構造**にするのがスマートです。
+
+---
+
+## 【構成方針】
+
+| API             | 変換先              | レイヤー            |
+| --------------- | ---------------- | --------------- |
+| `/api/points`   | `Point`          | `pointSource`   |
+| `/api/circles`  | `Circle→Polygon` | `circleSource`  |
+| `/api/polygons` | `Polygon`        | `polygonSource` |
+
+---
+
+## 【統一関数で処理する設計】
+
+### 1. レイヤー定義
+
+```js
+const pointSource = new VectorSource();
+const circleSource = new VectorSource();
+const polygonSource = new VectorSource();
+```
+
+---
+
+### 2. API別に処理関数を定義
+
+```js
+import { fromLonLat } from 'ol/proj';
+import Point from 'ol/geom/Point';
+import Circle from 'ol/geom/Circle';
+import Polygon, { fromCircle } from 'ol/geom/Polygon';
+import Feature from 'ol/Feature';
+
+/**
+ * 各APIに応じた処理マッピング
+ */
+const apiHandlers = {
+  points: {
+    source: pointSource,
+    convert: (dataList) => dataList.map(data => {
+      const geometry = new Point(fromLonLat([data.lon, data.lat]));
+      const feature = new Feature({ geometry });
+      feature.setProperties(data);
+      return feature;
+    }),
+  },
+
+  circles: {
+    source: circleSource,
+    convert: (dataList) => dataList.map(data => {
+      const center = fromLonLat([data.lon, data.lat]);
+      const radius = data.radius || 100;
+      const circle = new Circle(center, radius);
+      const geometry = fromCircle(circle, 64); // 擬似Polygon
+      const feature = new Feature({ geometry });
+      feature.setProperties(data);
+      return feature;
+    }),
+  },
+
+  polygons: {
+    source: polygonSource,
+    convert: (dataList) => dataList.map(data => {
+      const coords = data.coordinates.map(coord => fromLonLat(coord));
+      const geometry = new Polygon([coords]);
+      const feature = new Feature({ geometry });
+      feature.setProperties(data);
+      return feature;
+    }),
+  },
+};
+```
+
+---
+
+### 3. 共通描画関数（API種別を指定）
+
+```js
+async function updateLayerFromApi(apiType, apiUrl) {
+  const handler = apiHandlers[apiType];
+  if (!handler) {
+    console.warn(`Unknown API type: ${apiType}`);
+    return;
+  }
+
+  try {
+    const response = await fetch(apiUrl);
+    const data = await response.json();
+
+    const features = handler.convert(data);
+    handler.source.clear();
+    handler.source.addFeatures(features);
+  } catch (err) {
+    console.error(`Failed to load ${apiType}:`, err);
+  }
+}
+```
+
+---
+
+## 【使用例】
+
+```js
+updateLayerFromApi('points', '/api/points');
+updateLayerFromApi('circles', '/api/circles');
+updateLayerFromApi('polygons', '/api/polygons');
+```
+
+---
+
+## 【利点】
+
+* `type` が JSON に含まれていなくても、**API単位で分類できる**
+* 新しいタイプのレイヤー追加も **マッピングの1行追加だけ**
+* **統一処理関数で再描画ロジックがシンプル**
+
+---
+
+## 【次のステップ】
+
+必要であればこの構成を **Vue 3 コンポーネントとして整理したテンプレート**を提供できます。また、Vue で自動更新（ポーリング or WebSocket）を組み込むことも可能です。
+
+テンプレートをご希望されますか？それともさらに別の処理（補正、選択処理など）も組み合わせたいですか？
+
 
