@@ -1,0 +1,7 @@
+<DataTable
+  :data="tableData"
+  :headers="['名前', '年齢', 'スコア']"
+  :sortableColumns="[true, true, true]"
+  :filterableColumns="[true, false, true]"
+  :showControls="true"
+/>
