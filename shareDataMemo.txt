@@ -42,6 +42,7 @@ updateGeo各種
 地図、角コントロール
 addcontrol
 5:ポップアップ 表示非表示も
+is、mode、clickedGeoInfoをリアクティブで渡しておく
 addoverlay
 6:フィーチャー　ポイント
  displaymodeからスタイル決定
