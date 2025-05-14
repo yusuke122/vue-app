@@ -25,6 +25,22 @@ const router = createRouter({
       // which is lazy-loaded when the route is visited.
       component: () => import('../components/DataTable.vue'),
     },
+    {
+      path: '/AllCheckbox',
+      name: 'AllCheckbox',
+      // route level code-splitting
+      // this generates a separate chunk (About.[hash].js) for this route
+      // which is lazy-loaded when the route is visited.
+      component: () => import('../components/OffcanvasAddAllCheckbox.vue'),
+    },
+    {
+      path: '/GraphOffcanvas',
+      name: 'GraphOffcanvas',
+      // route level code-splitting
+      // this generates a separate chunk (About.[hash].js) for this route
+      // which is lazy-loaded when the route is visited.
+      component: () => import('../components/GraphOffcanvas.vue'),
+    },
   ],
 })
 
