@@ -69,3 +69,169 @@ vectorSource.addFeature(feature);
 ---
 
 必要であれば、具体的なコードをもとに一緒に調整できますので、お気軽にどうぞ。
+
+了解しました。以下に、`ol.interaction.Draw`を使ってフィーチャーを描画しつつ：
+
+1. **描画前に既存のフィーチャーの重複（5m以内）をチェック**
+2. **既存のフィーチャーを一時的に非表示にする**
+3. **描画したフィーチャーを重複位置にスナップして配置**
+4. **その位置にいるフィーチャーの数（自分含む）をラベルとして表示**
+
+…という一連の流れを含む、OpenLayersのサンプルコードを提示します。
+
+---
+
+## **サンプルコード（OpenLayers v6+ 対応）**
+
+```html
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>OpenLayers 重複チェックとラベル</title>
+  <script src="https://cdn.jsdelivr.net/npm/ol@latest/dist/ol.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@latest/ol.css">
+  <style>
+    html, body, #map {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+  <script type="module">
+    import Map from 'ol/Map.js';
+    import View from 'ol/View.js';
+    import { OSM } from 'ol/source.js';
+    import { Tile as TileLayer, Vector as VectorLayer } from 'ol/layer.js';
+    import { Vector as VectorSource } from 'ol/source.js';
+    import { Draw } from 'ol/interaction.js';
+    import { Point } from 'ol/geom.js';
+    import { getDistance } from 'ol/sphere.js';
+    import { toLonLat } from 'ol/proj.js';
+    import Feature from 'ol/Feature.js';
+    import Style from 'ol/style/Style.js';
+    import CircleStyle from 'ol/style/Circle.js';
+    import Fill from 'ol/style/Fill.js';
+    import Stroke from 'ol/style/Stroke.js';
+    import Text from 'ol/style/Text.js';
+
+    const DISTANCE_THRESHOLD = 5;
+
+    const vectorSource = new VectorSource();
+    const vectorLayer = new VectorLayer({
+      source: vectorSource,
+      style: feature => {
+        if (feature.get('isLabel')) return feature.getStyle(); // ラベルには独自スタイルあり
+        return new Style({
+          image: new CircleStyle({
+            radius: 7,
+            fill: new Fill({ color: 'red' }),
+            stroke: new Stroke({ color: 'white', width: 2 })
+          })
+        });
+      }
+    });
+
+    const map = new Map({
+      target: 'map',
+      layers: [
+        new TileLayer({ source: new OSM() }),
+        vectorLayer
+      ],
+      view: new View({
+        center: [0, 0],
+        zoom: 2
+      })
+    });
+
+    const draw = new Draw({
+      source: vectorSource,
+      type: 'Point'
+    });
+
+    draw.on('drawstart', (e) => {
+      // 描画開始時に既存フィーチャーを一時的に非表示にする
+      vectorSource.getFeatures().forEach(f => {
+        if (!f.get('isLabel')) f.setStyle(null);
+      });
+    });
+
+    draw.on('drawend', (e) => {
+      const newFeature = e.feature;
+      const newCoord = newFeature.getGeometry().getCoordinates();
+      const newCoordLonLat = toLonLat(newCoord);
+
+      // 重複チェック：5m以内のフィーチャーを探す
+      const nearby = vectorSource.getFeatures().filter(f => {
+        if (f === newFeature || f.get('isLabel')) return false;
+        const coord = f.getGeometry().getCoordinates();
+        return getDistance(toLonLat(coord), newCoordLonLat) < DISTANCE_THRESHOLD;
+      });
+
+      // 吸着させる
+      if (nearby.length > 0) {
+        const baseCoord = nearby[0].getGeometry().getCoordinates();
+        newFeature.getGeometry().setCoordinates(baseCoord);
+      }
+
+      // 最終位置での重複数（自分含む）
+      const finalCoord = newFeature.getGeometry().getCoordinates();
+      const count = vectorSource.getFeatures().filter(f => {
+        if (f.get('isLabel')) return false;
+        const coord = f.getGeometry().getCoordinates();
+        return getDistance(toLonLat(coord), toLonLat(finalCoord)) < DISTANCE_THRESHOLD;
+      }).length;
+
+      // 既存ラベルを削除
+      vectorSource.getFeatures().forEach(f => {
+        if (f.get('isLabel')) vectorSource.removeFeature(f);
+      });
+
+      // 新ラベルを追加
+      const labelFeature = new Feature({
+        geometry: new Point(finalCoord)
+      });
+      labelFeature.set('isLabel', true);
+      labelFeature.setStyle(new Style({
+        text: new Text({
+          text: `×${count}`,
+          font: '14px sans-serif',
+          fill: new Fill({ color: 'black' }),
+          stroke: new Stroke({ color: 'white', width: 3 }),
+          offsetY: -20
+        })
+      }));
+      vectorSource.addFeature(labelFeature);
+
+      // すべてのフィーチャーのスタイルを復元
+      vectorSource.getFeatures().forEach(f => {
+        if (!f.get('isLabel')) f.setStyle(undefined);
+      });
+    });
+
+    map.addInteraction(draw);
+  </script>
+</body>
+</html>
+```
+
+---
+
+## **ポイントまとめ**
+
+| 処理               | 実装内容                              |
+| ---------------- | --------------------------------- |
+| **重複チェック前に描画抑制** | `drawstart`で既存フィーチャーのスタイルを`null`に |
+| **描画時にスナップ**     | `drawend`時に5m以内の既存フィーチャーの位置に吸着    |
+| **重複数の表示**       | `×N` 形式でラベルを生成し、上部に表示             |
+| **既存ラベルの削除**     | 描画後、ラベルの重複を防ぐため都度クリア              |
+
+---
+
+このサンプルをベースに、カスタムの表示やクラス分けなども柔軟に対応できます。
+
+必要に応じて、複数位置でのラベル管理や非表示ロジックの洗練化も可能ですので、拡張したい点があれば教えてください！
