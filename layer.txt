@@ -1,0 +1,71 @@
+OpenLayersの`getClosestFeatureToCoordinate`と`getDistance`を使えば、距離が近いフィーチャー同士を検出して、条件（例：5m以内）に基づいて同じ位置に描画するような処理を実現することは**可能です**。以下にそれぞれの関数とあなたの目的に沿った使い方の概要を説明します。
+
+---
+
+### 1. `getClosestFeatureToCoordinate`
+
+* これは `ol.source.Vector` のメソッドで、指定した座標に最も近いフィーチャーを取得します。
+
+```js
+const closestFeature = vectorSource.getClosestFeatureToCoordinate(coordinate);
+```
+
+* `coordinate` は `[x, y]` の形式で渡します。
+* 戻り値は `ol.Feature` です。
+
+---
+
+### 2. `ol.sphere.getDistance`
+
+* これは2つの座標間の距離を（地球上の）メートル単位で計算します。
+
+```js
+import {getDistance} from 'ol/sphere';
+
+const distance = getDistance(coord1, coord2); // [lon, lat] 形式
+```
+
+* 注意点：この関数は **WGS84（EPSG:4326）** 座標系（緯度経度）を前提としています。地図が Web Mercator（EPSG:3857）などの場合は座標変換が必要です。
+
+```js
+import {toLonLat} from 'ol/proj';
+
+const coord1LonLat = toLonLat(coord1);
+const coord2LonLat = toLonLat(coord2);
+
+const distance = getDistance(coord1LonLat, coord2LonLat);
+```
+
+---
+
+### 3. 目的の実現：5m以内なら同じ位置に描画する
+
+フィーチャーを追加する前に、こういった処理ができます：
+
+```js
+const newCoord = feature.getGeometry().getCoordinates();
+const closest = vectorSource.getClosestFeatureToCoordinate(newCoord);
+
+if (closest) {
+  const closestCoord = closest.getGeometry().getCoordinates();
+  const dist = getDistance(toLonLat(newCoord), toLonLat(closestCoord));
+  
+  if (dist < 5) {
+    // 近すぎるので、既存のフィーチャーの位置に揃える
+    feature.getGeometry().setCoordinates(closestCoord);
+  }
+}
+
+vectorSource.addFeature(feature);
+```
+
+---
+
+### 注意点
+
+* Web Mercatorを使っている場合は、座標を一貫して扱うために `toLonLat` / `fromLonLat` の変換が必要です。
+* 精度の関係で、地図のズームレベルや端末によって数mの差が出ることがあります。
+
+---
+
+必要であれば、具体的なコードをもとに一緒に調整できますので、お気軽にどうぞ。
